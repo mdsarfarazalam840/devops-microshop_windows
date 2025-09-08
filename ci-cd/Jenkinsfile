@@ -1,0 +1,34 @@
+pipeline {
+  agent any
+  environment {
+    IMAGE_NAME = 'devops-microshop-app'
+    IMAGE_TAG = 'latest'
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+    stage('Build') {
+      steps {
+        dir('app') {
+          sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+        }
+      }
+    }
+    stage('Test') {
+      steps {
+        echo 'No tests yet'
+      }
+    }
+    stage('Deploy to K8s') {
+      when { expression { return fileExists('k8s/deployment.yaml') } }
+      steps {
+        sh 'kubectl apply -f k8s/'
+      }
+    }
+  }
+}
+
+

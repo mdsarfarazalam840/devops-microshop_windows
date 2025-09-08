@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: devops-microshop
+  labels:
+    app: devops-microshop
+spec:
+  type: ClusterIP
+  selector:
+    app: devops-microshop
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
+
+
