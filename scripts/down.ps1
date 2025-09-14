@@ -26,6 +26,14 @@ try {
   }
 } catch { Write-Host $_ -ForegroundColor Yellow }
 
+Write-Host "Uninstalling ArgoCD (if present)..." -ForegroundColor Cyan
+try {
+  $ns = (& kubectl get ns argocd -o name) 2>$null
+  if ($ns) {
+    kubectl delete ns argocd --wait=false | Write-Host
+  }
+} catch { Write-Host $_ -ForegroundColor Yellow }
+
 try {
   $ns = (& kubectl get ns monitoring -o name) 2>$null
   if ($ns) {

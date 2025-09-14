@@ -100,6 +100,46 @@ pwsh .\scripts\down.ps1
   # then visit http://localhost:3000
   ```
 
+### GitOps with ArgoCD
+
+ArgoCD is automatically installed with the automation scripts. Access ArgoCD UI:
+
+```powershell
+# Get admin password
+$password = kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}"; [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($password))
+
+# Port-forward ArgoCD server
+kubectl port-forward service/argocd-server -n argocd 8082:443
+```
+
+Then visit: `https://localhost:8082` (username: `admin`, password: from above command)
+
+#### ArgoCD Applications
+
+The automation script automatically creates an ArgoCD Application for your microshop. To set up GitOps with your Git repository:
+
+```powershell
+# Set up GitOps with your Git repository
+pwsh .\scripts\setup-gitops.ps1 -GitRepoUrl "https://github.com/mdsarfarazalam840/devops-microshop_windows.git"
+```
+
+This will:
+1. Update the ArgoCD Application manifest with your Git repository URL
+2. Create the ArgoCD Application to manage your microshop
+3. ArgoCD will sync your microshop manifests from the Git repository
+
+**Prerequisites for GitOps:**
+1. Push your code to a Git repository
+2. Ensure the `k8s/` directory is in your repository root
+3. Run the setup script with your actual repository URL
+
+**Manual setup (alternative):**
+```powershell
+# Update the repository URL in the manifest
+# Edit infra/argocd-app-microshop-git.yml and replace YOUR_USERNAME with your actual username
+kubectl apply -f infra/argocd-app-microshop-git.yml
+```
+
 ### Common Commands
 ```powershell
 # Re-apply k8s manifests
